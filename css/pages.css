@@ -3,8 +3,8 @@
    ========================================== */
 .hero {
   text-align: center;
-  margin-bottom: var(--spacing-xl);
-  padding: var(--spacing-2xl) var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-md);
 }
 
 .hero-title {

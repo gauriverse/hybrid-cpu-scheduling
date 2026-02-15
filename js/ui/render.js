@@ -4,7 +4,7 @@
  * Render algorithm cards in the grid
  */
 function renderAlgorithmCards(){
-    const grid = document.getElementById('algorithm-grid');
+    const grid = document.getElementById('algorithmGrid');
     if(!grid)
         return;
 
