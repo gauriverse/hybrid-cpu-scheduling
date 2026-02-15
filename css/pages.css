@@ -1,0 +1,37 @@
+/* ==========================================
+   HERO SECTION
+   ========================================== */
+.hero {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-2xl) var(--spacing-md);
+}
+
+.hero-title {
+  font-size: clamp(var(--font-size-3xl), 5vw, var(--font-size-5xl));
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+  font-family: var(--font-sans);
+  color: var(--color-accent-primary);
+  text-shadow: 0 0 30px rgba(255, 230, 0, 0.11);
+  letter-spacing: -0.02em;
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    text-shadow: 0 0 30px rgba(246, 255, 0, 0.027);
+  }
+  50% {
+    text-shadow: 0 0 50px rgba(255, 255, 0, 0.037);
+  }
+}
+
+.hero-subtitle {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.2;
+}
