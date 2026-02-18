@@ -14,6 +14,9 @@ function initializeApp(){
 
     // Wire the nav btn
     setupNavigation();
+
+    // Initialize simulator page if on simulator.html
+    initializeSimulator();
 }
 
 // Setup navigation between pages
