@@ -11,6 +11,28 @@ function initializeApp(){
 
     // Initialize modal functionality
     initializeModal();
+
+    // Wire the nav btn
+    setupNavigation();
+}
+
+// Setup navigation between pages
+function setupNavigation(){
+    // Homepage to Simulator
+    const simulatorBtn = document.getElementById('simulatorBtn');
+    if(simulatorBtn){
+        simulatorBtn.addEventListener('click',() => {
+            window.location.href = 'simulator.html';
+        });
+    }
+
+    // Simulator to Homepage
+    const backBtn = document.getElementById('back-btn');
+    if(backBtn){
+        backBtn.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    } 
 }
 
 // Run initialization when DOM is ready
