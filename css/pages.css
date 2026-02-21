@@ -509,3 +509,66 @@
   border-radius: 50%;
   flex-shrink: 0;
 }
+
+/* ==========================================
+   METRICS SECTION
+   ========================================== */
+
+.metrics-grid{
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: var(--spacing-lg);
+}
+
+.metric-card{
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+
+.metric-card:hover{
+  border-color:var(--color-accent-secondary);
+  background: var(--color-bg-tertiary);
+}
+
+.metric-icon{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-accent-primary);
+  font-size: var(--font-size-xl);
+  flex-shrink: 0;
+}
+
+.metric-info{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-label{
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+
+.metric-value {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-accent-primary);
+  line-height: 1;
+}
