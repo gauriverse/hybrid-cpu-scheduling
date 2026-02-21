@@ -177,6 +177,29 @@
             Add Process
           </button>
         </section>
+
+        <!-- Run Simulator Button -->
+        <div class="sim-run-section">
+            <button class="btn btn-primary btn-large" id="run-btn">
+                <i class="fa-solid fa-play"></i>
+                Run Simulation
+            </button>
+        </div>
+
+        <!-- Gantt Chart -->
+        <section class="sim-section" id="gantt-section" hidden>
+          <h2 class="sim-section-title">
+            <span class="step-number">04</span>
+            Gantt Chart
+          </h2>
+
+          <!-- Gantt chart blocks will be rendered here by JS -->
+          <div class="gantt-wrapper" id="gantt-wrapper">
+            <div class="gantt-blocks" id="gantt-blocks"></div>
+            <div class="gantt-timeline" id="gantt-timeline"></div>
+          </div>
+        </section>
+        
       </div>
     </main>
 
