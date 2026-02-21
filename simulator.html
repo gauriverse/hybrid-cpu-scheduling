@@ -155,13 +155,15 @@
                   type="number"
                   class="process-input field-priority"
                   placeholder="1"
-                  min="1" hidden
+                  min="1"
+                  hidden
                 />
                 <input
                   type="number"
                   class="process-input field-quantum"
                   placeholder="2"
-                  min="1" hidden
+                  min="1"
+                  hidden
                 />
                 <input type="color" class="process-color" value="#4ECDC4" />
                 <button class="btn-remove-process" data-row="1">
@@ -180,10 +182,10 @@
 
         <!-- Run Simulator Button -->
         <div class="sim-run-section">
-            <button class="btn btn-primary btn-large" id="run-btn">
-                <i class="fa-solid fa-play"></i>
-                Run Simulation
-            </button>
+          <button class="btn btn-primary btn-large" id="run-btn">
+            <i class="fa-solid fa-play"></i>
+            Run Simulation
+          </button>
         </div>
 
         <!-- Gantt Chart -->
@@ -201,28 +203,70 @@
         </section>
 
         <!-- Output Section -->
-        <section class="sim-section" id="table-section">
-            <h2 class="sim-section-title">
-                <span class="step-number">05</span>
-                Process Results
-            </h2>
+        <section class="sim-section" id="table-section" hidden>
+          <h2 class="sim-section-title">
+            <span class="step-number">05</span>
+            Process Results
+          </h2>
 
-            <div class="output-table-wrapper">
-                <table class="output-table" id="output-table">
-                    <thead>
-                        <tr>
-                            <th>Process</th>
-                            <th>AT</th>
-                            <th>BT</th>
-                            <th>CT</th>
-                            <th>TAT</th>
-                            <th>WT</th>
-                        </tr>
-                    </thead>
-                    <!-- Rows filled by JS after simulation -->
+          <div class="output-table-wrapper">
+            <table class="output-table" id="output-table">
+              <thead>
+                <tr>
+                  <th>Process</th>
+                  <th>AT</th>
+                  <th>BT</th>
+                  <th>CT</th>
+                  <th>TAT</th>
+                  <th>WT</th>
+                </tr>
+              </thead>
+              <!-- Rows filled by JS after simulation -->
               <tbody id="output-table-body"></tbody>
-                </table>
+            </table>
+          </div>
+        </section>
+
+        <!-- Metric section -->
+        <section class="sim-section" id="metrics-section">
+          <h2 class="sim-section-title">
+            <span class="step-number">06</span>
+            Performance Metrics
+          </h2>
+
+          <div class="metrics-grid">
+
+            <div class="metric-card">
+              <div class="metric-icon">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Avg Turnaround Time</span>
+                <span class="metric-value" id="metric-atat">--</span>
+              </div>
             </div>
+
+            <div class="metric-card">
+              <div class="metric-icon">
+                <i class="fa-solid fa-hourglass-half"></i>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Avg Waiting Time</span>
+                <span class="metric-value" id="metric-awt">--</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon">
+                <i class="fa-solid fa-microchip"></i>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">CPU Efficiency</span>
+                <span class="metric-value" id="metric-efficiency">--</span>
+              </div>
+            </div>
+
+          </div>
         </section>
         
       </div>
