@@ -202,3 +202,90 @@ function removeProcess(row) {
 
   row.remove();
 }
+
+/**
+ * Wire the Run Simulation button
+ */
+function setupRunButton(){
+    const runBtn = document.getElementById('run-btn');
+    if(!runBtn) return;
+
+    runBtn.addEventListener('click', handleRunSimulation);
+}
+
+/**
+ * Collect process inputs, valdate and revea; result sections
+ */
+
+function handleRunSimulation(){
+    const algo = getSelectedAlgorithm();
+    if(!algo){
+        alert('Pleae select an algorithm first.');
+        return;
+    }
+
+    const rows = document.querySelectorAll('.process-row');
+    const collectedProcesses = [];
+    let hasError = false;
+
+    rows.forEach(row => {
+        const id = row.querySelector('.process-id').textContent.trim();
+         const inputs  = row.querySelectorAll('.process-input:not([hidden])');
+        const at      = parseInt(inputs[0].value);
+        const bt      = parseInt(inputs[1].value);
+        const color   = row.querySelector('.process-color').value;
+
+        // Burst Time must be positive
+        if(!isPositiveNumber(bt)){
+            inputs[1].style.borderColor = 'var(--color-error)';
+            hasError = true;
+        }
+        else{
+            inputs[1].style.borderColor = 'var(--color-border)';
+        }
+
+        // Arrival time must be non-negative
+        if(!isNonNegativeNumber(at)){
+            inputs[0].style.borderColor = 'var(--color-error)';
+            hasError = true;
+        } else {
+            inputs[0].style.borderColor = 'var(--color-border)';
+        }
+
+        collectedProcesses.push({ id, at, bt, color });
+    });
+
+    if(hasError){
+        alert('Please fix invalid inputs before running the simulation.');
+        return;
+    }
+
+    
+    // Save collected processes to state
+    clearProcesses();
+    collectedProcesses.forEach(p => addProcessToState(p));
+
+    console.log('Processes ready for simulation:', getProcesses());
+    console.log('Algorithm:', algo);
+
+    // Reveal result sections
+    revealResultSections();
+}
+
+/**
+ * Show gantt, table and metrics sections after simulation runs
+ */
+function revealResultSections(){
+    const ganttSection   = document.getElementById('gantt-section');
+    const tableSection   = document.getElementById('table-section');
+    const metricsSection = document.getElementById('metrics-section');
+
+    if(ganttSection)   ganttSection.removeAttribute('hidden');
+    if(tableSection)   tableSection.removeAttribute('hidden');
+    if(metricsSection) metricsSection.removeAttribute('hidden');
+
+    // Scroll smoothly to gantt chart
+    if(ganttSection){
+        ganttSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
