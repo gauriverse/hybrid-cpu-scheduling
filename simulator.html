@@ -129,8 +129,8 @@
               <span>Process</span>
               <span>Arrival Time</span>
               <span>Burst Time</span>
-              <span class="field-priority">Priority</span>
-              <span class="field-priority">Time Quantum</span>
+              <span class="field-priority" hidden>Priority</span>
+              <span class="field-priority" hidden>Time Quantum</span>
               <span>Color</span>
               <span></span>
             </div>
@@ -155,13 +155,13 @@
                   type="number"
                   class="process-input field-priority"
                   placeholder="1"
-                  min="1"
+                  min="1" hidden
                 />
                 <input
                   type="number"
                   class="process-input field-quantum"
                   placeholder="2"
-                  min="1"
+                  min="1" hidden
                 />
                 <input type="color" class="process-color" value="#4ECDC4" />
                 <button class="btn-remove-process" data-row="1">
