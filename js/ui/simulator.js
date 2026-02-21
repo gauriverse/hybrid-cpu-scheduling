@@ -81,3 +81,40 @@ function updateConditionalFields(algoKey){
         }
     });
 }
+
+/**
+ * Setup click handlers for hybrid option buttons
+ */
+
+function setupHybridSelection(){
+    const buttons = document.querySelectorAll('.hybrid-option-btn');
+    if(!buttons.length) return;
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click',() => {
+            const hybridMode = btn.dataset.hybrid;
+            selectHybridMode(hybridMode);
+        });
+    });
+}
+
+/**
+ * Handle hybrid mode selection
+ * @param {string} mode - 'time' or 'space'
+ */
+
+function selectHybridMode(mode){
+
+    document.querySelectorAll('.hybrid-option-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    const activeBtn = document.querySelector(`.hybrid-option-btn[data-hybrid="${mode}"]`);
+    if(activeBtn){
+        activeBtn.classList.add('active');
+    }
+
+    setSelectedAlgorithm(`hybrid-${mode}`);
+
+    console.log(`Hybrid mode selected: ${mode}`);
+}
