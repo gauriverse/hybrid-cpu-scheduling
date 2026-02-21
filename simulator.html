@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
       content="Interactive CPU Scheduling Simulator - Visualize and understand different scheduling algorithms"
@@ -29,83 +29,157 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
     />
-</head>
-<body>
+  </head>
+  <body>
     <main id="simulator-page" class="page active" role="main">
-        <div class="container">
-            <!-- ================ PAGE HEADER =============== -->
-            <header class="sim-header">
-                <button class="btn-back" id="back-btn">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    Back
-                </button>
-                <h1 class="sim-title">CPU Scheduler Simulator</h1>
-            </header>
+      <div class="container">
+        <!-- ================ PAGE HEADER =============== -->
+        <header class="sim-header">
+          <button class="btn-back" id="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back
+          </button>
+          <h1 class="sim-title">CPU Scheduler Simulator</h1>
+        </header>
 
-            <!-- =============== ALGORITHM SELECTION ============= -->
-            <section class="sim-section" id="algo-selection-section">
-                <h2 class="sim-section-title">
-                    <span class="step-number">01</span>
-                    Select Algorithm 
-                </h2>
-                <div class="algo-selector-grid" id="algo-selector-grid">
-                    <button class="algo-selector-btn" data-algo="fcfs">
-                        <span class="algo-selector-name">FCFS</span>
-                        <span class="algo-selector-desc">First Come First Serve</span>
-                    </button>
+        <!-- =============== ALGORITHM SELECTION ============= -->
+        <section class="sim-section" id="algo-selection-section">
+          <h2 class="sim-section-title">
+            <span class="step-number">01</span>
+            Select Algorithm
+          </h2>
+          <div class="algo-selector-grid" id="algo-selector-grid">
+            <button class="algo-selector-btn" data-algo="fcfs">
+              <span class="algo-selector-name">FCFS</span>
+              <span class="algo-selector-desc">First Come First Serve</span>
+            </button>
 
-                    <button class="algo-selector-btn" data-algo="sjf">
-                        <span class="algo-selector-name">SJF</span>
-                        <span class="algo-selector-desc">Shortest Job First</span>
-                    </button>
+            <button class="algo-selector-btn" data-algo="sjf">
+              <span class="algo-selector-name">SJF</span>
+              <span class="algo-selector-desc">Shortest Job First</span>
+            </button>
 
-                    <button class="algo-selector-btn" data-algo="srtf">
-                        <span class="algo-selector-name">SRTF</span>
-                        <span class="algo-selector-desc">Shortest Remaining Time First</span>
-                    </button>
+            <button class="algo-selector-btn" data-algo="srtf">
+              <span class="algo-selector-name">SRTF</span>
+              <span class="algo-selector-desc"
+                >Shortest Remaining Time First</span
+              >
+            </button>
 
-                    <button class="algo-selector-btn" data-algo="rr">
-                        <span class="algo-selector-name">RR</span>
-                        <span class="algo-selector-desc">Round Robin</span>
-                    </button>
+            <button class="algo-selector-btn" data-algo="rr">
+              <span class="algo-selector-name">RR</span>
+              <span class="algo-selector-desc">Round Robin</span>
+            </button>
 
-                    <button class="algo-selector-btn" data-algo="priority">
-                        <span class="algo-selector-name">Priority</span>
-                        <span class="algo-selector-desc">Priority Scheduling</span>
-                    </button>
+            <button class="algo-selector-btn" data-algo="priority">
+              <span class="algo-selector-name">Priority</span>
+              <span class="algo-selector-desc">Priority Scheduling</span>
+            </button>
 
-                    <button class="algo-selector-btn" data-algo="hybrid">
-                        <span class="algo-selector-name">Hybrid</span>
-                        <span class="algo-selector-desc">Combined Approach</span>
-                    </button>
-                </div>
-            </section>
+            <button class="algo-selector-btn" data-algo="hybrid">
+              <span class="algo-selector-name">Hybrid</span>
+              <span class="algo-selector-desc">Combined Approach</span>
+            </button>
+          </div>
+        </section>
 
-            <!-- Hybrid Options - Time and Space-->
-            <section class="sim-section" id="hybrid-options" hidden>
-                <h2 class="sim-section-title">
-                    <span class="step-number">02</span>
-                    Hybrid Mode
-                </h2>
-                <div class="hybrid-options-grid">
-                    <button class="hybrid-option-btn" data-hybrid="time" id="hybrid-time-btn">
-                        <i class="fa-solid fa-bolt"></i>
-                        <span class="hybrid-option-name">Time Efficiency</span>
-                        <span class="hybrid-option-desc">Minimizes average waiting and turnaround time</span>
-                    </button>
+        <!-- Hybrid Options - Time and Space-->
+        <section class="sim-section" id="hybrid-options" hidden>
+          <h2 class="sim-section-title">
+            <span class="step-number">02</span>
+            Hybrid Mode
+          </h2>
+          <div class="hybrid-options-grid">
+            <button
+              class="hybrid-option-btn"
+              data-hybrid="time"
+              id="hybrid-time-btn"
+            >
+              <i class="fa-solid fa-bolt"></i>
+              <span class="hybrid-option-name">Time Efficiency</span>
+              <span class="hybrid-option-desc"
+                >Minimizes average waiting and turnaround time</span
+              >
+            </button>
 
-                    <button class="hybrid-option-btn" data-hybrid="space" id="hybrid-space-btn">
+            <button
+              class="hybrid-option-btn"
+              data-hybrid="space"
+              id="hybrid-space-btn"
+            >
               <i class="fa-solid fa-microchip"></i>
               <span class="hybrid-option-name">Space Efficiency</span>
-              <span class="hybrid-option-desc">Minimizes memory and resource overhead</span>
+              <span class="hybrid-option-desc"
+                >Minimizes memory and resource overhead</span
+              >
             </button>
-                </div>
-            </section>
+          </div>
+        </section>
 
+        <!-- Process Input -->
+        <section class="sim-section" id="process-section">
+          <h2 class="sim-section-title">
+            <span class="step-number">03</span>
+            Configure Process
+          </h2>
 
-        </div>
+          <!-- Process Rows Container -->
+          <div class="process-table-wrapper">
+            <div class="process-table-header">
+              <span>Process</span>
+              <span>Arrival Time</span>
+              <span>Burst Time</span>
+              <span class="field-priority">Priority</span>
+              <span class="field-priority">Time Quantum</span>
+              <span>Color</span>
+              <span></span>
+            </div>
+
+            <div class="process-rows" id="process-rows">
+              <div class="process-row" id="process-row-1">
+                <span class="process-id">P1</span>
+                <input
+                  type="number"
+                  class="process-input"
+                  placeholder="0"
+                  min="0"
+                  value="0"
+                />
+                <input
+                  type="number"
+                  class="process-input"
+                  placeholder="1"
+                  min="1"
+                />
+                <input
+                  type="number"
+                  class="process-input field-priority"
+                  placeholder="1"
+                  min="1"
+                />
+                <input
+                  type="number"
+                  class="process-input field-quantum"
+                  placeholder="2"
+                  min="1"
+                />
+                <input type="color" class="process-color" value="#4ECDC4" />
+                <button class="btn-remove-process" data-row="1">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add Process Button -->
+          <button class="btn-add-process" id="add-process-btn">
+            <i class="fa-solid fa-plus"></i>
+            Add Process
+          </button>
+        </section>
+      </div>
     </main>
-    
+
     <!-- Scripts -->
     <script src="js/config/algorithms.js"></script>
     <script src="js/utils/helpers.js"></script>
@@ -115,5 +189,5 @@
     <script src="js/ui/modal.js"></script>
     <script src="js/ui/simulator.js"></script>
     <script src="js/main.js"></script>
-</body>
+  </body>
 </html>
