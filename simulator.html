@@ -199,6 +199,31 @@
             <div class="gantt-timeline" id="gantt-timeline"></div>
           </div>
         </section>
+
+        <!-- Output Section -->
+        <section class="sim-section" id="table-section">
+            <h2 class="sim-section-title">
+                <span class="step-number">05</span>
+                Process Results
+            </h2>
+
+            <div class="output-table-wrapper">
+                <table class="output-table" id="output-table">
+                    <thead>
+                        <tr>
+                            <th>Process</th>
+                            <th>AT</th>
+                            <th>BT</th>
+                            <th>CT</th>
+                            <th>TAT</th>
+                            <th>WT</th>
+                        </tr>
+                    </thead>
+                    <!-- Rows filled by JS after simulation -->
+              <tbody id="output-table-body"></tbody>
+                </table>
+            </div>
+        </section>
         
       </div>
     </main>
