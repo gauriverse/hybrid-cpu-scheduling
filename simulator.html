@@ -116,10 +116,54 @@
           </div>
         </section>
 
+        <section class="sim-simulator" id="hybrid-combinations">
+          <h2 class="sim-section-title">
+            <span class="step-number">03</span>
+            Choose Algorithm Combination
+          </h2>
+
+          <!-- Time Efficiency Combinations -->
+          <div class="hybrid-combo-group" id="time-combos">
+            <button class="hybrid-combo-btn" data-combo="priority+srtf">
+              <span class="combo-name">Priority + SRTF</span>
+              <span class="combo-desc">Priority Scheduling combined with Shortest Remaining Time First</span>
+            </button>
+
+            <button class="hybrid-combo-btn" data-combo="rr+sjf">
+              <span class="combo-name">RR + SJF</span>
+              <span class="combo-desc">Round Robin combined with Shortest Job First</span>
+            </button>
+
+            <button class="hybrid-combo-btn" data-combo="priority+rr">
+              <span class="combo-name">Priority + RR</span>
+              <span class="combo-desc">Priority Scheduling combined with Round Robin</span>
+            </button>
+          </div>
+
+          <!-- Space Efficiency Combinations -->
+          <div class="hybrid-combo-group" id="space-combos">
+            <button class="hybrid-combo-btn" data-combo="fcfs+sjf">
+              <span class="combo-name">FCFS + SJF</span>
+              <span class="combo-desc">First Come First Serve combined with Shortest Job First</span>
+            </button>
+
+            <button class="hybrid-combo-btn" data-combo="fcfs+priority">
+              <span class="combo-name">FCFS + Priority</span>
+              <span class="combo-desc">First Come First Serve combined with Priority</span>
+            </button>
+
+            <button class="hybrid-combo-btn" data-combo="fcfs+rr">
+              <span class="combo-name">FCFS + RR</span>
+              <span class="combo-desc">First Come First Serve combined with Round Robin</span>
+            </button>
+          </div>
+
+        </section>
+
         <!-- Process Input -->
         <section class="sim-section" id="process-section">
           <h2 class="sim-section-title">
-            <span class="step-number">03</span>
+            <span class="step-number">04</span>
             Configure Process
           </h2>
 
@@ -191,7 +235,7 @@
         <!-- Gantt Chart -->
         <section class="sim-section" id="gantt-section" hidden>
           <h2 class="sim-section-title">
-            <span class="step-number">04</span>
+            <span class="step-number">05</span>
             Gantt Chart
           </h2>
 
@@ -205,7 +249,7 @@
         <!-- Output Section -->
         <section class="sim-section" id="table-section" hidden>
           <h2 class="sim-section-title">
-            <span class="step-number">05</span>
+            <span class="step-number">06</span>
             Process Results
           </h2>
 
@@ -230,7 +274,7 @@
         <!-- Metric section -->
         <section class="sim-section" id="metrics-section" hidden>
           <h2 class="sim-section-title">
-            <span class="step-number">06</span>
+            <span class="step-number">07</span>
             Performance Metrics
           </h2>
 
