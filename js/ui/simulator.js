@@ -5,7 +5,9 @@
 function initializeSimulator() {
   setupAlgorithmSelection();
   setupHybridSelection();
+  setupHybridCombinations();
   setupProcessControls();
+  setupRunButton();
 }
 
 /**
@@ -115,9 +117,57 @@ function selectHybridMode(mode) {
     activeBtn.classList.add('active');
   }
 
-  setSelectedAlgorithm(`hybrid-${mode}`);
+  const combinationSection = document.getElementById('hybrid-combinations');
+  const timeCombos = document.getElementById('time-combos');
+  const spaceCombos = document.getElementById('space-combos');
+
+  if(combinationSection) combinationSection.removeAttribute('hidden');
+
+  if(mode == 'time'){
+    if(timeCombos) timeCombos.removeAttribute('hidden');
+    if(spaceCombos) spaceCombos.setAttribute('hidden','');
+  }else if(mode === 'space'){
+        if(spaceCombos) spaceCombos.removeAttribute('hidden');
+        if(timeCombos)  timeCombos.setAttribute('hidden', '');
+    }
 
   console.log(`Hybrid mode selected: ${mode}`);
+}
+
+/**
+ * Setup click handlers for hybrid combination buttons
+ */
+function setupHybridCombinations(){
+    const buttons = document.querySelectorAll('.hybrid-combo-btn');
+    if(!buttons.length) return;
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const combo = btn.dataset.combo;
+            selectHybridCombination(combo);
+        });
+    });
+}
+
+/**
+ * Handle hybrid combination selection
+ * @param {string} combo - Combination key (e.g., 'priority-srtf', 'fcfs-sjf')
+ */
+function selectHybridCombination(combo){
+
+    // Update active button visually (only within visible group)
+    document.querySelectorAll('.hybrid-combo-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const activeBtn = document.querySelector(`.hybrid-combo-btn[data-combo="${combo}"]`);
+    if(activeBtn){
+        activeBtn.classList.add('active');
+    }
+
+    // Save to state with 'hybrid-' prefix
+    setSelectedAlgorithm(`hybrid-${combo}`);
+
+    console.log(`Hybrid combination selected: hybrid-${combo}`);
 }
 
 /**
