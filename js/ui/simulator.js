@@ -230,7 +230,7 @@ function handleRunSimulation(){
 
     rows.forEach(row => {
         const id = row.querySelector('.process-id').textContent.trim();
-         const inputs  = row.querySelectorAll('.process-input:not([hidden])');
+        const inputs  = row.querySelectorAll('.process-input:not([hidden])');
         const at      = parseInt(inputs[0].value);
         const bt      = parseInt(inputs[1].value);
         const color   = row.querySelector('.process-color').value;
