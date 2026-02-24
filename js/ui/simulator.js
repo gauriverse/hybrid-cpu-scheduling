@@ -304,6 +304,21 @@ function handleRunSimulation(){
             }
         }
 
+        // Collect quantum if Round Robin is selected
+        let quantum = 2; // default
+        if(algo === 'rr'){
+            const quantumInput = inputs[2];
+            quantum = parseInt(quantumInput.value);
+
+            // Validate quantum is positive
+            if(!isPositiveNumber(quantum)){
+                quantumInput.style.borderColor = 'var(--color-error)';
+                hasError = true;
+            } else {
+                quantumInput.style.borderColor = 'var(--color-border)';
+            }
+        }
+
         // Validate burst time — must be positive
         if(!isPositiveNumber(bt)){
             inputs[1].style.borderColor = 'var(--color-error)';
@@ -320,7 +335,7 @@ function handleRunSimulation(){
             inputs[0].style.borderColor = 'var(--color-border)';
         }
 
-        collectedProcesses.push({ id, at, bt, priority, color });
+        collectedProcesses.push({ id, at, bt, priority, quantum, color });
     });
 
     if(hasError){
@@ -333,7 +348,13 @@ function handleRunSimulation(){
     collectedProcesses.forEach(p => addProcessToState(p));
 
     // Step 4 — Run the scheduler
-    const results = runScheduler(algo, getProcesses());
+    // For RR, use first process's quantum value (all should be same if validated properly)
+    const options = {};
+    if(algo === 'rr' && collectedProcesses.length > 0){
+        options.quantum = collectedProcesses[0].quantum;
+    }
+
+    const results = runScheduler(algo, getProcesses(), options);
 
     if(!results){
         alert(`Algorithm "${algo}" is not yet implemented.`);
@@ -348,6 +369,7 @@ function handleRunSimulation(){
     // Step 6 — Reveal result sections and scroll
     revealResultSections();
 }
+
 
 
 

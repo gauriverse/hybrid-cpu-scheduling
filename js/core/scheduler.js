@@ -91,6 +91,8 @@ function runScheduler(algorithm, processes, options = {}){
             return runSJF(processes);
         case 'priority':
             return runPriority(processes);
+        case 'rr':
+            return runRR(processes,options.quantum || 2);
             
 
         // Other algorithms will be added in future commits
@@ -460,6 +462,118 @@ function runPriority(rawProcesses){
         cpuEfficiency
     };
 }
+
+
+// =============================================
+//   Round Robin
+// =============================================
+
+/**
+ * Run Preemptive Round Robin scheduling
+ * @param {Array} rawProcesses - Array of { id, at, bt, color }
+ * @param {number} quantum - Time quantum for each process
+ * @returns {Object} { processes, gantt, avgTAT, avgWT, cpuEfficiency }
+ */
+function runRR(rawProcesses, quantum){
+
+    // Deep copy and add remaining time tracker
+    const processes = rawProcesses.map(p => ({
+        ...p,
+        remaining: p.bt,
+        ct: 0,
+        tat: 0,
+        wt: 0
+    }));
+
+    const queue     = [];
+    let time        = 0;
+    let completed   = 0;
+    const n         = processes.length;
+    const gantt     = [];
+    const arrived   = new Set(); // Track which processes have been added to queue
+
+    while(completed < n){
+
+        // Add processes that arrive exactly at current time to queue
+        processes.forEach(p => {
+            if(p.at === time && !arrived.has(p.id)){
+                queue.push(p);
+                arrived.add(p.id);
+            }
+        });
+
+        // If queue is empty — CPU is IDLE
+        if(queue.length === 0){
+            gantt.push({
+                id: 'IDLE',
+                start: time,
+                end: time + 1,
+                color: null
+            });
+            time++;
+            continue;
+        }
+
+        // Get next process from queue
+        const current = queue.shift();
+
+        // Execute for time quantum or remaining time, whichever is smaller
+        const execTime = Math.min(quantum, current.remaining);
+        
+        // Add gantt block
+        gantt.push({
+            id: current.id,
+            start: time,
+            end: time + execTime,
+            color: current.color
+        });
+
+        current.remaining -= execTime;
+        time += execTime;
+
+        // Add any processes that arrived during execution to queue
+        processes.forEach(p => {
+            if(p.at > time - execTime && p.at <= time && !arrived.has(p.id)){
+                queue.push(p);
+                arrived.add(p.id);
+            }
+        });
+
+        // If current process still has work remaining — add back to queue
+        if(current.remaining > 0){
+            queue.push(current);
+        } else {
+            // Process completed
+            current.ct  = time;
+            current.tat = current.ct - current.at;
+            current.wt  = current.tat - current.bt;
+            completed++;
+        }
+    }
+
+    // Calculate averages
+    const totalTAT = processes.reduce((sum, p) => sum + p.tat, 0);
+    const totalWT  = processes.reduce((sum, p) => sum + p.wt, 0);
+    const avgTAT   = totalTAT / n;
+    const avgWT    = totalWT / n;
+
+    // CPU Efficiency
+    const totalBurst     = processes.reduce((sum, p) => sum + p.bt, 0);
+    const totalTime      = time;
+    const cpuEfficiency  = ((totalBurst / totalTime) * 100).toFixed(2);
+
+    // Clean up remaining property before returning
+    processes.forEach(p => delete p.remaining);
+
+    return {
+        processes,
+        gantt,
+        avgTAT: avgTAT.toFixed(2),
+        avgWT:  avgWT.toFixed(2),
+        cpuEfficiency
+    };
+}
+
 
 
 /**
