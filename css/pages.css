@@ -496,6 +496,29 @@
   text-align: left;
 }
 
+
+/* IDLE block — shown when CPU has no process */
+.gantt-block--idle {
+  background: var(--color-bg-tertiary);
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.gantt-timeline {
+  display: flex;
+  margin-top: var(--spacing-xs);
+}
+
+.gantt-time-marker {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  min-width: 40px;
+  text-align: left;
+}
+
+
 /* ==========================================
    OUTPUT TABLE SECTION
    ========================================== */

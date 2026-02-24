@@ -270,38 +270,71 @@ function setupRunButton(){
     runBtn.addEventListener('click', handleRunSimulation);
 }
 
-/**
- * Collect process inputs, valdate and revea; result sections
- */
 
+
+/**
+ * Collect process inputs, validate, run scheduler, render results
+ */
 function handleRunSimulation(){
+
+    // Step 1 — Check algorithm is selected
     const algo = getSelectedAlgorithm();
     if(!algo){
-        alert('Pleae select an algorithm first.');
+        alert('Please select an algorithm first.');
         return;
     }
 
+    // Step 2 — Collect and validate process rows
     const rows = document.querySelectorAll('.process-row');
     const collectedProcesses = [];
     let hasError = false;
 
     rows.forEach(row => {
-        const id = row.querySelector('.process-id').textContent.trim();
-        const inputs  = row.querySelectorAll('.process-input:not([hidden])');
-        const at      = parseInt(inputs[0].value);
-        const bt      = parseInt(inputs[1].value);
-        const color   = row.querySelector('.process-color').value;
+        const id     = row.querySelector('.process-id').textContent.trim();
+        const inputs = row.querySelectorAll('.process-input:not([hidden])');
+        const at     = parseInt(inputs[0].value);
+        const bt     = parseInt(inputs[1].value);
+        const color  = row.querySelector('.process-color').value;
 
-        // Burst Time must be positive
+        // Collect priority if Priority algorithm is selected
+        let priority = 0;
+        if(algo === 'priority'){
+            const priorityInput = inputs[2];
+            priority = parseInt(priorityInput.value);
+
+            // Validate priority is positive
+            if(!isPositiveNumber(priority)){
+                priorityInput.style.borderColor = 'var(--color-error)';
+                hasError = true;
+            } else {
+                priorityInput.style.borderColor = 'var(--color-border)';
+            }
+        }
+
+        // Collect quantum if Round Robin is selected
+        let quantum = 2; // default
+        if(algo === 'rr'){
+            const quantumInput = inputs[2];
+            quantum = parseInt(quantumInput.value);
+
+            // Validate quantum is positive
+            if(!isPositiveNumber(quantum)){
+                quantumInput.style.borderColor = 'var(--color-error)';
+                hasError = true;
+            } else {
+                quantumInput.style.borderColor = 'var(--color-border)';
+            }
+        }
+
+        // Validate burst time — must be positive
         if(!isPositiveNumber(bt)){
             inputs[1].style.borderColor = 'var(--color-error)';
             hasError = true;
-        }
-        else{
+        } else {
             inputs[1].style.borderColor = 'var(--color-border)';
         }
 
-        // Arrival time must be non-negative
+        // Validate arrival time — must be non-negative
         if(!isNonNegativeNumber(at)){
             inputs[0].style.borderColor = 'var(--color-error)';
             hasError = true;
@@ -309,7 +342,7 @@ function handleRunSimulation(){
             inputs[0].style.borderColor = 'var(--color-border)';
         }
 
-        collectedProcesses.push({ id, at, bt, color });
+        collectedProcesses.push({ id, at, bt, priority, quantum, color });
     });
 
     if(hasError){
@@ -317,17 +350,35 @@ function handleRunSimulation(){
         return;
     }
 
-    
-    // Save collected processes to state
+    // Step 3 — Save to state
     clearProcesses();
     collectedProcesses.forEach(p => addProcessToState(p));
 
-    console.log('Processes ready for simulation:', getProcesses());
-    console.log('Algorithm:', algo);
+    // Step 4 — Run the scheduler
+    // For RR, use first process's quantum value (all should be same if validated properly)
+    const options = {};
+    if(algo === 'rr' && collectedProcesses.length > 0){
+        options.quantum = collectedProcesses[0].quantum;
+    }
 
-    // Reveal result sections
+    const results = runScheduler(algo, getProcesses(), options);
+
+    if(!results){
+        alert(`Algorithm "${algo}" is not yet implemented.`);
+        return;
+    }
+
+    // Step 5 — Render results into the UI
+    renderGantt(results.gantt);
+    renderTable(results.processes);
+    renderMetrics(results.avgTAT, results.avgWT, results.cpuEfficiency);
+
+    // Step 6 — Reveal result sections and scroll
     revealResultSections();
 }
+
+
+
 
 /**
  * Show gantt, table and metrics sections after simulation runs
