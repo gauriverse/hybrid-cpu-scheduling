@@ -46,12 +46,19 @@ function selectAlgorithm(algoKey) {
 
   // Show hybrid options if hybrid selected, hide otherwise
   const hybridOptions = document.getElementById("hybrid-options");
+  const combinationSection = document.getElementById("hybrid-combinations");
+  const timeCombos = document.getElementById("time-combos");
+  const spaceCombos = document.getElementById("space-combos");
   if (hybridOptions) {
     if (algoKey === "hybrid") {
       hybridOptions.removeAttribute("hidden");
     } else {
       hybridOptions.setAttribute("hidden", "");
+      if (combinationSection) combinationSection.setAttribute("hidden", "");
+    if (timeCombos) timeCombos.setAttribute("hidden", "");
+    if (spaceCombos) spaceCombos.setAttribute("hidden", "");
     }
+    
   }
 
   // Show/hide priority and quantum fields in process inputs
