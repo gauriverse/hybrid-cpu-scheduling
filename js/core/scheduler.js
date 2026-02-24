@@ -85,8 +85,10 @@ function runScheduler(algorithm, processes, options = {}){
     switch(algorithm){
         case 'fcfs':
             return runFCFS(processes);
-         case 'srtf':
+        case 'srtf':
             return runSRTF(processes);
+        case 'sjf':
+            return runSJF(processes);
 
         // Other algorithms will be added in future commits
         default:
@@ -169,16 +171,94 @@ function runFCFS(rawProcesses){
 }
 
 // =============================================
-//   PLACEHOLDERS — coming in future commits
+//   SJF — Shortest Job First
 // =============================================
 
 /**
- * Run SJF scheduling
- * @param {Array} processes
+ * Run Non-Preemptive SJF scheduling
+ * @param {Array} rawProcesses - Array of { id, at, bt, color }
+ * @returns {Object} { processes, gantt, avgTAT, avgWT, cpuEfficiency }
  */
-function runSJF(processes){
-    // TODO: implement
+function runSJF(rawProcesses){
+
+    // Deep copy and add done flag
+    const processes = rawProcesses.map(p => ({
+        ...p,
+        done: false,
+        ct: 0,
+        tat: 0,
+        wt: 0
+    }));
+
+    let time      = 0;
+    let completed = 0;
+    const n       = processes.length;
+    const gantt   = [];
+
+    // Loop until all processes complete
+    while(completed < n){
+
+        // Find available processes (arrived and not done yet)
+        const available = processes
+            .filter(p => p.at <= time && !p.done)
+            .sort((a, b) => a.bt - b.bt); // Sort by burst time (shortest first)
+
+        // If no process available — CPU is IDLE
+        if(available.length === 0){
+            gantt.push({
+                id: 'IDLE',
+                start: time,
+                end: time + 1,
+                color: null
+            });
+            time++;
+            continue;
+        }
+
+        // Get shortest job
+        const current = available[0];
+
+        // Add gantt block for this process
+        gantt.push({
+            id: current.id,
+            start: time,
+            end: time + current.bt,
+            color: current.color
+        });
+
+        // Execute to completion (non-preemptive)
+        current.ct   = time + current.bt;
+        current.tat  = current.ct - current.at;
+        current.wt   = current.tat - current.bt;
+        current.done = true;
+
+        time = current.ct;
+        completed++;
+    }
+
+    // Calculate averages
+    const totalTAT = processes.reduce((sum, p) => sum + p.tat, 0);
+    const totalWT  = processes.reduce((sum, p) => sum + p.wt, 0);
+    const avgTAT   = totalTAT / n;
+    const avgWT    = totalWT / n;
+
+    // CPU Efficiency
+    const totalBurst     = processes.reduce((sum, p) => sum + p.bt, 0);
+    const totalTime      = time;
+    const cpuEfficiency  = ((totalBurst / totalTime) * 100).toFixed(2);
+
+    // Clean up done flag before returning
+    processes.forEach(p => delete p.done);
+
+    return {
+        processes,
+        gantt,
+        avgTAT: avgTAT.toFixed(2),
+        avgWT:  avgWT.toFixed(2),
+        cpuEfficiency
+    };
 }
+
 
 
 // =============================================
