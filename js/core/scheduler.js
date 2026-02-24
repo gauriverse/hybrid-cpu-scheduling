@@ -475,6 +475,20 @@ function runPriority(rawProcesses){
  * @returns {Object} { processes, gantt, avgTAT, avgWT, cpuEfficiency }
  */
 function runRR(rawProcesses, quantum){
+    // Check if any process has its own quantum defined
+    const differentQuantumFound = rawProcesses.some(p => 
+        p.quantum !== undefined && p.quantum !== quantum
+    );
+
+    if(differentQuantumFound){
+        alert("Error: Round Robin requires SAME time quantum for all processes.");
+        return null; // stop execution
+    }
+
+    if(quantum <= 0){
+        alert("Error: Time Quantum must be greater than 0.");
+        return null;
+    }
 
     // Deep copy and add remaining time tracker
     const processes = rawProcesses.map(p => ({
