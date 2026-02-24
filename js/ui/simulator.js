@@ -263,9 +263,7 @@ function setupRunButton(){
     runBtn.addEventListener('click', handleRunSimulation);
 }
 
-/**
- * Collect process inputs, valdate and revea; result sections
- */
+
 
 /**
  * Collect process inputs, validate, run scheduler, render results

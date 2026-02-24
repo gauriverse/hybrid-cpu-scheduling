@@ -85,6 +85,8 @@ function runScheduler(algorithm, processes, options = {}){
     switch(algorithm){
         case 'fcfs':
             return runFCFS(processes);
+         case 'srtf':
+            return runSRTF(processes);
 
         // Other algorithms will be added in future commits
         default:
@@ -178,13 +180,113 @@ function runSJF(processes){
     // TODO: implement
 }
 
+
+// =============================================
+//   SRTF — Shortest Remaining Time First
+// =============================================
+
 /**
- * Run SRTF scheduling
- * @param {Array} processes
+ * Run Preemptive SRTF scheduling
+ * @param {Array} rawProcesses - Array of { id, at, bt, color }
+ * @returns {Object} { processes, gantt, avgTAT, avgWT, cpuEfficiency }
  */
-function runSRTF(processes){
-    // TODO: implement
+function runSRTF(rawProcesses){
+
+    // Deep copy and add remaining time tracker
+    const processes = rawProcesses.map(p => ({
+        ...p,
+        remaining: p.bt,
+        ct: 0,
+        tat: 0,
+        wt: 0
+    }));
+
+    let time      = 0;
+    let completed = 0;
+    const n       = processes.length;
+    const gantt   = [];
+    let lastProcess = null;
+
+    // Loop until all processes complete
+    while(completed < n){
+
+        // Find all processes that have arrived and still have work remaining
+        const available = processes
+            .filter(p => p.at <= time && p.remaining > 0)
+            .sort((a, b) => a.remaining - b.remaining);
+
+        // If no process available — CPU is IDLE
+        if(available.length === 0){
+            // Track idle time in gantt
+            if(lastProcess !== 'IDLE'){
+                gantt.push({
+                    id: 'IDLE',
+                    start: time,
+                    end: time + 1,
+                    color: null
+                });
+                lastProcess = 'IDLE';
+            } else {
+                // Extend last idle block
+                gantt[gantt.length - 1].end = time + 1;
+            }
+            time++;
+            continue;
+        }
+
+        // Get process with shortest remaining time
+        const current = available[0];
+
+        // If switching to a different process — start new gantt block
+        if(lastProcess !== current.id){
+            gantt.push({
+                id: current.id,
+                start: time,
+                end: time + 1,
+                color: current.color
+            });
+            lastProcess = current.id;
+        } else {
+            // Same process continuing — extend its gantt block
+            gantt[gantt.length - 1].end = time + 1;
+        }
+
+        // Execute for 1 time unit
+        current.remaining--;
+        time++;
+
+        // Check if process completed
+        if(current.remaining === 0){
+            current.ct  = time;
+            current.tat = current.ct - current.at;
+            current.wt  = current.tat - current.bt;
+            completed++;
+        }
+    }
+
+    // Calculate averages
+    const totalTAT = processes.reduce((sum, p) => sum + p.tat, 0);
+    const totalWT  = processes.reduce((sum, p) => sum + p.wt, 0);
+    const avgTAT   = totalTAT / n;
+    const avgWT    = totalWT / n;
+
+    // CPU Efficiency
+    const totalBurst     = processes.reduce((sum, p) => sum + p.bt, 0);
+    const totalTime      = time;
+    const cpuEfficiency  = ((totalBurst / totalTime) * 100).toFixed(2);
+
+    // Remove 'remaining' property before returning
+    processes.forEach(p => delete p.remaining);
+
+    return {
+        processes,
+        gantt,
+        avgTAT: avgTAT.toFixed(2),
+        avgWT:  avgWT.toFixed(2),
+        cpuEfficiency
+    };
 }
+
 
 /**
  * Run Round Robin scheduling
@@ -211,3 +313,5 @@ function runPriority(processes){
 function runHybrid(processes, mode){
     // TODO: implement
 }
+
+
