@@ -289,6 +289,21 @@ function handleRunSimulation(){
         const bt     = parseInt(inputs[1].value);
         const color  = row.querySelector('.process-color').value;
 
+        // Collect priority if Priority algorithm is selected
+        let priority = 0;
+        if(algo === 'priority'){
+            const priorityInput = inputs[2];
+            priority = parseInt(priorityInput.value);
+
+            // Validate priority is positive
+            if(!isPositiveNumber(priority)){
+                priorityInput.style.borderColor = 'var(--color-error)';
+                hasError = true;
+            } else {
+                priorityInput.style.borderColor = 'var(--color-border)';
+            }
+        }
+
         // Validate burst time — must be positive
         if(!isPositiveNumber(bt)){
             inputs[1].style.borderColor = 'var(--color-error)';
@@ -305,7 +320,7 @@ function handleRunSimulation(){
             inputs[0].style.borderColor = 'var(--color-border)';
         }
 
-        collectedProcesses.push({ id, at, bt, color });
+        collectedProcesses.push({ id, at, bt, priority, color });
     });
 
     if(hasError){
@@ -333,6 +348,7 @@ function handleRunSimulation(){
     // Step 6 — Reveal result sections and scroll
     revealResultSections();
 }
+
 
 
 /**
