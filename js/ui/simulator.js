@@ -267,34 +267,39 @@ function setupRunButton(){
  * Collect process inputs, valdate and revea; result sections
  */
 
+/**
+ * Collect process inputs, validate, run scheduler, render results
+ */
 function handleRunSimulation(){
+
+    // Step 1 — Check algorithm is selected
     const algo = getSelectedAlgorithm();
     if(!algo){
-        alert('Pleae select an algorithm first.');
+        alert('Please select an algorithm first.');
         return;
     }
 
+    // Step 2 — Collect and validate process rows
     const rows = document.querySelectorAll('.process-row');
     const collectedProcesses = [];
     let hasError = false;
 
     rows.forEach(row => {
-        const id = row.querySelector('.process-id').textContent.trim();
-        const inputs  = row.querySelectorAll('.process-input:not([hidden])');
-        const at      = parseInt(inputs[0].value);
-        const bt      = parseInt(inputs[1].value);
-        const color   = row.querySelector('.process-color').value;
+        const id     = row.querySelector('.process-id').textContent.trim();
+        const inputs = row.querySelectorAll('.process-input:not([hidden])');
+        const at     = parseInt(inputs[0].value);
+        const bt     = parseInt(inputs[1].value);
+        const color  = row.querySelector('.process-color').value;
 
-        // Burst Time must be positive
+        // Validate burst time — must be positive
         if(!isPositiveNumber(bt)){
             inputs[1].style.borderColor = 'var(--color-error)';
             hasError = true;
-        }
-        else{
+        } else {
             inputs[1].style.borderColor = 'var(--color-border)';
         }
 
-        // Arrival time must be non-negative
+        // Validate arrival time — must be non-negative
         if(!isNonNegativeNumber(at)){
             inputs[0].style.borderColor = 'var(--color-error)';
             hasError = true;
@@ -310,17 +315,27 @@ function handleRunSimulation(){
         return;
     }
 
-    
-    // Save collected processes to state
+    // Step 3 — Save to state
     clearProcesses();
     collectedProcesses.forEach(p => addProcessToState(p));
 
-    console.log('Processes ready for simulation:', getProcesses());
-    console.log('Algorithm:', algo);
+    // Step 4 — Run the scheduler
+    const results = runScheduler(algo, getProcesses());
 
-    // Reveal result sections
+    if(!results){
+        alert(`Algorithm "${algo}" is not yet implemented.`);
+        return;
+    }
+
+    // Step 5 — Render results into the UI
+    renderGantt(results.gantt);
+    renderTable(results.processes);
+    renderMetrics(results.avgTAT, results.avgWT, results.cpuEfficiency);
+
+    // Step 6 — Reveal result sections and scroll
     revealResultSections();
 }
+
 
 /**
  * Show gantt, table and metrics sections after simulation runs
