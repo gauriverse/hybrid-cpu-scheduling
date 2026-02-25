@@ -93,7 +93,7 @@ function runScheduler(algorithm, processes, options = {}){
             return runPriority(processes);
         case 'rr':
             return runRR(processes,options.quantum || 2);
-        case 'hybrid-priority-SRTF':
+        case 'hybrid-priority+srtf':
             return runHybridPrioritySRTF(processes);
 
         // Other algorithms will be added in future commits

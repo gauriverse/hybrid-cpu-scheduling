@@ -77,7 +77,9 @@ function updateConditionalFields(algoKey){
     const quantumFields  = document.querySelectorAll('.field-quantum');
 
     // Show priority for: priority, hybrid-priority-srtf, hybrid-priority-rr, hybrid-fcfs-priority
-    const needsPriority = ['priority', 'hybrid-priority-srtf', 'hybrid-priority-rr', 'hybrid-fcfs-priority'].includes(algoKey);
+    const needsPriority =
+    algoKey === 'priority' ||
+    algoKey.includes('priority');
     
     priorityFields.forEach(field => {
         if(needsPriority){
@@ -88,7 +90,9 @@ function updateConditionalFields(algoKey){
     });
 
     // Show quantum for: rr, hybrid-rr-sjf, hybrid-priority-rr, hybrid-fcfs-rr
-    const needsQuantum = ['rr', 'hybrid-rr-sjf', 'hybrid-priority-rr', 'hybrid-fcfs-rr'].includes(algoKey);
+    const needsQuantum =
+    algoKey === 'rr' ||
+    algoKey.includes('rr');
 
     quantumFields.forEach(field => {
         if(needsQuantum){
@@ -179,10 +183,15 @@ function selectHybridCombination(combo){
     }
 
     // Save to state with 'hybrid-' prefix
-    setSelectedAlgorithm(`hybrid-${combo}`);
+    const fullAlgo = `hybrid-${combo}`;
+    setSelectedAlgorithm(fullAlgo);
 
-    console.log(`Hybrid combination selected: hybrid-${combo}`);
+    // Update input fields based on selected combination
+    updateConditionalFields(fullAlgo);
+
+    console.log(`Hybrid combination selected: ${fullAlgo}`);
 }
+
 
 /**
  * Setup add process button and wire remove on existing row
@@ -215,8 +224,8 @@ function addProcess() {
         <span class="process-id">P${count}</span>
         <input type="number" class="process-input" placeholder="0" min="0" value="0" />
         <input type="number" class="process-input" placeholder="1" min="1" />
-        <input type="number" class="process-input field-priority" placeholder="1" min="1" ${algoKey === "priority" ? "" : "hidden"} />
-        <input type="number" class="process-input field-quantum" placeholder="2" min="1" ${algoKey === "rr" ? "" : "hidden"} />
+        <input type="number" class="process-input field-priority" placeholder="1" min="1" ${algoKey.includes("priority") ? "" : "hidden"} />
+        <input type="number" class="process-input field-quantum" placeholder="2" min="1" ${algoKey.includes("rr") ? "" : "hidden"} />
         <input type="color" class="process-color" value="${color}" />
         <button class="btn-remove-process" data-row="${count}">
             <i class="fa-solid fa-xmark"></i>
