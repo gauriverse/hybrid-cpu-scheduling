@@ -93,7 +93,8 @@ function runScheduler(algorithm, processes, options = {}){
             return runPriority(processes);
         case 'rr':
             return runRR(processes,options.quantum || 2);
-            
+        case 'hybrid-priority-SRTF':
+            return runHybridPrioritySRTF(processes);
 
         // Other algorithms will be added in future commits
         default:
@@ -591,12 +592,113 @@ function runRR(rawProcesses, quantum){
 
 
 /**
- * Run Hybrid scheduling
- * @param {Array} processes
- * @param {string} mode - 'time' or 'space'
+ * Hybrid: Priority + SRTF (Time Efficiency)
+ * Preemptive - Prioritizes by priority value first, then by remaining time
+ * @param {Array} rawProcesses - Array of { id, at, bt, priority, color }
+ * @returns {Object} { processes, gantt, avgTAT, avgWT, cpuEfficiency }
  */
-function runHybrid(processes, mode){
-    // TODO: implement
+function runHybridPrioritySRTF(rawProcesses){
+
+    // Deep copy and add remaining time tracker
+    const processes = rawProcesses.map(p => ({
+        ...p,
+        remaining: p.bt,
+        ct: 0,
+        tat: 0,
+        wt: 0
+    }));
+
+    let time      = 0;
+    let completed = 0;
+    const n       = processes.length;
+    const gantt   = [];
+    let lastProcess = null;
+
+    // Loop until all processes complete
+    while(completed < n){
+
+        // Get available processes (arrived and still have work)
+        const ready = processes.filter(
+            p => p.at <= time && p.remaining > 0
+        );
+
+        // If no process available — CPU is IDLE
+        if(ready.length === 0){
+            // Track idle time in gantt
+            if(lastProcess !== 'IDLE'){
+                gantt.push({
+                    id: 'IDLE',
+                    start: time,
+                    end: time + 1,
+                    color: null
+                });
+                lastProcess = 'IDLE';
+            } else {
+                // Extend last idle block
+                gantt[gantt.length - 1].end = time + 1;
+            }
+            time++;
+            continue;
+        }
+
+        // Sort by priority first, then by remaining time
+        ready.sort((a, b) =>
+            a.priority - b.priority ||
+            a.remaining - b.remaining
+        );
+
+        // Get highest priority process (with shortest remaining time as tiebreaker)
+        const current = ready[0];
+
+        // If switching to a different process — start new gantt block
+        if(lastProcess !== current.id){
+            gantt.push({
+                id: current.id,
+                start: time,
+                end: time + 1,
+                color: current.color
+            });
+            lastProcess = current.id;
+        } else {
+            // Same process continuing — extend its gantt block
+            gantt[gantt.length - 1].end = time + 1;
+        }
+
+        // Execute for 1 time unit
+        current.remaining--;
+        time++;
+
+        // Check if process completed
+        if(current.remaining === 0){
+            current.ct  = time;
+            current.tat = current.ct - current.at;
+            current.wt  = current.tat - current.bt;
+            completed++;
+        }
+    }
+
+    // Calculate averages
+    const totalTAT = processes.reduce((sum, p) => sum + p.tat, 0);
+    const totalWT  = processes.reduce((sum, p) => sum + p.wt, 0);
+    const avgTAT   = totalTAT / n;
+    const avgWT    = totalWT / n;
+
+    // CPU Efficiency
+    const totalBurst     = processes.reduce((sum, p) => sum + p.bt, 0);
+    const totalTime      = time;
+    const cpuEfficiency  = ((totalBurst / totalTime) * 100).toFixed(2);
+
+    // Remove 'remaining' property before returning
+    processes.forEach(p => delete p.remaining);
+
+    return {
+        processes,
+        gantt,
+        avgTAT: avgTAT.toFixed(2),
+        avgWT:  avgWT.toFixed(2),
+        cpuEfficiency
+    };
 }
+
 
 

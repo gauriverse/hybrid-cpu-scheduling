@@ -72,26 +72,33 @@ function selectAlgorithm(algoKey) {
  * based on currently selected algorithm
  * @param {string} algoKey - Selected algorithm key
  */
-function updateConditionalFields(algoKey) {
-  const priorityFields = document.querySelectorAll(".field-priority");
-  const quantumFields = document.querySelectorAll(".field-quantum");
+function updateConditionalFields(algoKey){
+    const priorityFields = document.querySelectorAll('.field-priority');
+    const quantumFields  = document.querySelectorAll('.field-quantum');
 
-  priorityFields.forEach((field) => {
-    if (algoKey === "priority") {
-      field.removeAttribute("hidden");
-    } else {
-      field.setAttribute("hidden", "");
-    }
-  });
+    // Show priority for: priority, hybrid-priority-srtf, hybrid-priority-rr, hybrid-fcfs-priority
+    const needsPriority = ['priority', 'hybrid-priority-srtf', 'hybrid-priority-rr', 'hybrid-fcfs-priority'].includes(algoKey);
+    
+    priorityFields.forEach(field => {
+        if(needsPriority){
+            field.removeAttribute('hidden');
+        } else {
+            field.setAttribute('hidden', '');
+        }
+    });
 
-  quantumFields.forEach((field) => {
-    if (algoKey === "rr") {
-      field.removeAttribute("hidden");
-    } else {
-      field.setAttribute("hidden", "");
-    }
-  });
+    // Show quantum for: rr, hybrid-rr-sjf, hybrid-priority-rr, hybrid-fcfs-rr
+    const needsQuantum = ['rr', 'hybrid-rr-sjf', 'hybrid-priority-rr', 'hybrid-fcfs-rr'].includes(algoKey);
+
+    quantumFields.forEach(field => {
+        if(needsQuantum){
+            field.removeAttribute('hidden');
+        } else {
+            field.setAttribute('hidden', '');
+        }
+    });
 }
+
 
 /**
  * Setup click handlers for hybrid option buttons
