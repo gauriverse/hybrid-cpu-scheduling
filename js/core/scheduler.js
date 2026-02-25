@@ -642,15 +642,14 @@ function runHybridPrioritySRTF(rawProcesses){
         }
 
         // Sort by priority first, then by remaining time
-        ready.sort((a, b) =>
-            a.priority - b.priority ||
-            a.remaining - b.remaining
-        );
+      // Hybrid Rule
 
-        // Get highest priority process (with shortest remaining time as tiebreaker)
-        const current = ready[0];
+        const minPriority = Math.min(...ready.map(p => p.priority));
+        const highestPriorityGroup = ready.filter(p => p.priority === minPriority);
+        highestPriorityGroup.sort((a, b) => a.remaining - b.remaining);
+        const current = highestPriorityGroup[0];
 
-        // If switching to a different process — start new gantt block
+       // If switching to a different process — start new gantt block
         if(lastProcess !== current.id){
             gantt.push({
                 id: current.id,
