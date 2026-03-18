@@ -373,8 +373,9 @@ function handleRunSimulation(){
     // Step 4 — Run the scheduler
     // For RR, use first process's quantum value (all should be same if validated properly)
     const options = {};
-    if(algo === 'rr' && collectedProcesses.length > 0){
-        options.quantum = collectedProcesses[0].quantum;
+    if(algo.includes('rr') && collectedProcesses.length > 0){
+        const quantumInput = document.querySelector('.field-quantum:not([hidden])');
+        options.quantum = parseInt(quantumInput.value);
     }
 
     const results = runScheduler(algo, getProcesses(), options);

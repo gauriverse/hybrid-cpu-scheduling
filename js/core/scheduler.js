@@ -95,6 +95,9 @@ function runScheduler(algorithm, processes, options = {}){
             return runRR(processes,options.quantum || 2);
         case 'hybrid-priority+srtf':
             return runHybridPrioritySRTF(processes);
+        case 'hybrid-rr+sjf':
+            return runHybridRRSJF(processes, options.quantum || 2);
+         
 
         // Other algorithms will be added in future commits
         default:
@@ -591,15 +594,8 @@ function runRR(rawProcesses, quantum){
 
 
 
-/**
- * Hybrid: Priority + SRTF (Time Efficiency)
- * Preemptive - Prioritizes by priority value first, then by remaining time
- * @param {Array} rawProcesses - Array of { id, at, bt, priority, color }
- * @returns {Object} { processes, gantt, avgTAT, avgWT, cpuEfficiency }
- */
 function runHybridPrioritySRTF(rawProcesses){
 
-    // Deep copy and add remaining time tracker
     const processes = rawProcesses.map(p => ({
         ...p,
         remaining: p.bt,
@@ -608,96 +604,219 @@ function runHybridPrioritySRTF(rawProcesses){
         wt: 0
     }));
 
-    let time      = 0;
+    let time = 0;
     let completed = 0;
-    const n       = processes.length;
-    const gantt   = [];
-    let lastProcess = null;
+    const n = processes.length;
+    const gantt = [];
 
-    // Loop until all processes complete
+    let current = null;
+
     while(completed < n){
 
-        // Get available processes (arrived and still have work)
         const ready = processes.filter(
             p => p.at <= time && p.remaining > 0
         );
 
-        // If no process available — CPU is IDLE
+        // ---------------- IDLE ----------------
         if(ready.length === 0){
-            // Track idle time in gantt
-            if(lastProcess !== 'IDLE'){
-                gantt.push({
-                    id: 'IDLE',
-                    start: time,
-                    end: time + 1,
-                    color: null
-                });
-                lastProcess = 'IDLE';
+            if(!gantt.length || gantt[gantt.length-1].id !== 'IDLE'){
+                gantt.push({ id:'IDLE', start:time, end:time+1, color:null });
             } else {
-                // Extend last idle block
-                gantt[gantt.length - 1].end = time + 1;
+                gantt[gantt.length-1].end++;
             }
             time++;
             continue;
         }
 
-        // Sort by priority first, then by remaining time
-      // Hybrid Rule
+        // ---------------- FIND BEST BY STRICT RULE ----------------
 
-        const minPriority = Math.min(...ready.map(p => p.priority));
-        const highestPriorityGroup = ready.filter(p => p.priority === minPriority);
-        highestPriorityGroup.sort((a, b) => a.remaining - b.remaining);
-        const current = highestPriorityGroup[0];
+        let best = ready[0];
 
-       // If switching to a different process — start new gantt block
-        if(lastProcess !== current.id){
+        for(let p of ready){
+
+            // STRICT PRIORITY DOMINATES
+            if(p.priority < best.priority){
+                best = p;
+            }
+            else if(p.priority === best.priority){
+
+                // SRTF inside same priority
+                if(p.remaining < best.remaining){
+                    best = p;
+                }
+                else if(p.remaining === best.remaining){
+                    if(p.id.localeCompare(best.id) < 0){
+                        best = p;
+                    }
+                }
+            }
+        }
+
+        // ---------------- FORCE PREEMPTION LOGIC ----------------
+
+        if(current){
+
+            const higherPriority = best.priority < current.priority;
+
+            const samePriorityBetterSRTF =
+                best.priority === current.priority &&
+                best.remaining < current.remaining;
+
+            // If NOT strictly better, continue current
+            if(!higherPriority && !samePriorityBetterSRTF){
+                best = current;
+            }
+        }
+
+        current = best;
+
+        // ---------------- GANTT ----------------
+
+        if(!gantt.length || gantt[gantt.length-1].id !== current.id){
             gantt.push({
                 id: current.id,
                 start: time,
-                end: time + 1,
+                end: time+1,
                 color: current.color
             });
-            lastProcess = current.id;
         } else {
-            // Same process continuing — extend its gantt block
-            gantt[gantt.length - 1].end = time + 1;
+            gantt[gantt.length-1].end++;
         }
 
-        // Execute for 1 time unit
+        // ---------------- EXECUTE ----------------
+
         current.remaining--;
         time++;
 
-        // Check if process completed
+        // ---------------- COMPLETE ----------------
+
         if(current.remaining === 0){
-            current.ct  = time;
+            current.ct = time;
             current.tat = current.ct - current.at;
-            current.wt  = current.tat - current.bt;
+            current.wt = current.tat - current.bt;
             completed++;
+            current = null;
         }
     }
 
-    // Calculate averages
-    const totalTAT = processes.reduce((sum, p) => sum + p.tat, 0);
-    const totalWT  = processes.reduce((sum, p) => sum + p.wt, 0);
-    const avgTAT   = totalTAT / n;
-    const avgWT    = totalWT / n;
+    const totalTAT = processes.reduce((s,p)=>s+p.tat,0);
+    const totalWT  = processes.reduce((s,p)=>s+p.wt,0);
+    const totalBT  = processes.reduce((s,p)=>s+p.bt,0);
 
-    // CPU Efficiency
-    const totalBurst     = processes.reduce((sum, p) => sum + p.bt, 0);
-    const totalTime      = time;
-    const cpuEfficiency  = ((totalBurst / totalTime) * 100).toFixed(2);
-
-    // Remove 'remaining' property before returning
     processes.forEach(p => delete p.remaining);
 
     return {
         processes,
         gantt,
-        avgTAT: avgTAT.toFixed(2),
-        avgWT:  avgWT.toFixed(2),
-        cpuEfficiency
+        avgTAT:(totalTAT/n).toFixed(2),
+        avgWT:(totalWT/n).toFixed(2),
+        cpuEfficiency:((totalBT/time)*100).toFixed(2)
     };
 }
+
+function runHybridRRSJF(rawProcesses, quantum){
+
+    const processes = rawProcesses.map(p => ({
+        ...p,
+        remaining: p.bt,
+        ct: 0,
+        tat: 0,
+        wt: 0
+    }));
+
+    let time = 0;
+    let completed = 0;
+    const n = processes.length;
+    const gantt = [];
+    const queue = [];
+    const arrived = new Set();
+
+    while(completed < n){
+
+        // Add newly arrived processes
+        processes.forEach(p=>{
+            if(p.at <= time && !arrived.has(p.id)){
+                queue.push(p);
+                arrived.add(p.id);
+            }
+        });
+
+        // If queue empty → idle
+        if(queue.length === 0){
+            gantt.push({
+                id:'IDLE',
+                start:time,
+                end:time+1,
+                color:null
+            });
+            time++;
+            continue;
+        }
+
+        // ⭐ SJF selection based on REMAINING time
+        // Only once when adding new processes → sort
+        if(queue.length > 1){
+            queue.sort((a,b)=>{
+            if(a.remaining !== b.remaining)
+            return a.remaining - b.remaining;
+        return a.at - b.at;
+    });
+}
+
+        const current = queue.shift();
+
+        const execTime = Math.min(quantum, current.remaining);
+
+        gantt.push({
+            id: current.id,
+            start: time,
+            end: time + execTime,
+            color: current.color
+        });
+
+        current.remaining -= execTime;
+        time += execTime;
+
+        // Add arrivals during execution
+     
+
+        // If still remaining → RR push back
+        if(current.remaining > 0){
+            queue.push(current);
+        }
+        
+        else{
+            current.ct = time;
+            current.tat = current.ct - current.at;
+            current.wt = current.tat - current.bt;
+            completed++;
+        }
+    }
+
+    const totalTAT = processes.reduce((s,p)=>s+p.tat,0);
+    const totalWT  = processes.reduce((s,p)=>s+p.wt,0);
+
+    const avgTAT = totalTAT / n;
+    const avgWT  = totalWT / n;
+
+    const totalBurst = processes.reduce((s,p)=>s+p.bt,0);
+    const cpuEfficiency = ((totalBurst/time)*100).toFixed(2);
+
+    processes.forEach(p=>delete p.remaining);
+
+    return {
+        processes,
+        gantt,
+        avgTAT: avgTAT.toFixed(2),
+        avgWT: avgWT.toFixed(2),
+        cpuEfficiency
+    };
+
+
+    console.log("Selected Quantum:", options.quantum);
+}
+
+
 
 
 
