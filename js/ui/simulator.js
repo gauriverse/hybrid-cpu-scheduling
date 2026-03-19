@@ -34,7 +34,7 @@ function selectAlgorithm(algoKey) {
   setSelectedAlgorithm(algoKey);
 
   // Update
-  document.querySelectorAll('.algo-selector-btn').forEach((btn) => {
+  document.querySelectorAll(".algo-selector-btn").forEach((btn) => {
     btn.classList.remove("active");
   });
   const activeBtn = document.querySelector(
@@ -55,10 +55,9 @@ function selectAlgorithm(algoKey) {
     } else {
       hybridOptions.setAttribute("hidden", "");
       if (combinationSection) combinationSection.setAttribute("hidden", "");
-    if (timeCombos) timeCombos.setAttribute("hidden", "");
-    if (spaceCombos) spaceCombos.setAttribute("hidden", "");
+      if (timeCombos) timeCombos.setAttribute("hidden", "");
+      if (spaceCombos) spaceCombos.setAttribute("hidden", "");
     }
-    
   }
 
   // Show/hide priority and quantum fields in process inputs
@@ -72,37 +71,32 @@ function selectAlgorithm(algoKey) {
  * based on currently selected algorithm
  * @param {string} algoKey - Selected algorithm key
  */
-function updateConditionalFields(algoKey){
-    const priorityFields = document.querySelectorAll('.field-priority');
-    const quantumFields  = document.querySelectorAll('.field-quantum');
+function updateConditionalFields(algoKey) {
+  const priorityFields = document.querySelectorAll(".field-priority");
+  const quantumFields = document.querySelectorAll(".field-quantum");
 
-    // Show priority for: priority, hybrid-priority-srtf, hybrid-priority-rr, hybrid-fcfs-priority
-    const needsPriority =
-    algoKey === 'priority' ||
-    algoKey.includes('priority');
-    
-    priorityFields.forEach(field => {
-        if(needsPriority){
-            field.removeAttribute('hidden');
-        } else {
-            field.setAttribute('hidden', '');
-        }
-    });
+  // Show priority for: priority, hybrid-priority-srtf, hybrid-priority-rr, hybrid-fcfs-priority
+  const needsPriority = algoKey === "priority" || algoKey.includes("priority");
 
-    // Show quantum for: rr, hybrid-rr-sjf, hybrid-priority-rr, hybrid-fcfs-rr
-    const needsQuantum =
-    algoKey === 'rr' ||
-    algoKey.includes('rr');
+  priorityFields.forEach((field) => {
+    if (needsPriority) {
+      field.removeAttribute("hidden");
+    } else {
+      field.setAttribute("hidden", "");
+    }
+  });
 
-    quantumFields.forEach(field => {
-        if(needsQuantum){
-            field.removeAttribute('hidden');
-        } else {
-            field.setAttribute('hidden', '');
-        }
-    });
+  // Show quantum for: rr, hybrid-rr-sjf, hybrid-priority-rr, hybrid-fcfs-rr
+  const needsQuantum = algoKey === "rr" || algoKey.includes("rr");
+
+  quantumFields.forEach((field) => {
+    if (needsQuantum) {
+      field.removeAttribute("hidden");
+    } else {
+      field.setAttribute("hidden", "");
+    }
+  });
 }
-
 
 /**
  * Setup click handlers for hybrid option buttons
@@ -126,28 +120,30 @@ function setupHybridSelection() {
  */
 
 function selectHybridMode(mode) {
-  document.querySelectorAll('.hybrid-option-btn').forEach((btn) => {
-    btn.classList.remove('active');
+  document.querySelectorAll(".hybrid-option-btn").forEach((btn) => {
+    btn.classList.remove("active");
   });
 
-  const activeBtn = document.querySelector(`.hybrid-option-btn[data-hybrid="${mode}"]`);
+  const activeBtn = document.querySelector(
+    `.hybrid-option-btn[data-hybrid="${mode}"]`,
+  );
   if (activeBtn) {
-    activeBtn.classList.add('active');
+    activeBtn.classList.add("active");
   }
 
-  const combinationSection = document.getElementById('hybrid-combinations');
-  const timeCombos = document.getElementById('time-combos');
-  const spaceCombos = document.getElementById('space-combos');
+  const combinationSection = document.getElementById("hybrid-combinations");
+  const timeCombos = document.getElementById("time-combos");
+  const spaceCombos = document.getElementById("space-combos");
 
-  if(combinationSection) combinationSection.removeAttribute('hidden');
+  if (combinationSection) combinationSection.removeAttribute("hidden");
 
-  if(mode == 'time'){
-    if(timeCombos) timeCombos.removeAttribute('hidden');
-    if(spaceCombos) spaceCombos.setAttribute('hidden','');
-  }else if(mode === 'space'){
-        if(spaceCombos) spaceCombos.removeAttribute('hidden');
-        if(timeCombos)  timeCombos.setAttribute('hidden', '');
-    }
+  if (mode == "time") {
+    if (timeCombos) timeCombos.removeAttribute("hidden");
+    if (spaceCombos) spaceCombos.setAttribute("hidden", "");
+  } else if (mode === "space") {
+    if (spaceCombos) spaceCombos.removeAttribute("hidden");
+    if (timeCombos) timeCombos.setAttribute("hidden", "");
+  }
 
   console.log(`Hybrid mode selected: ${mode}`);
 }
@@ -155,55 +151,55 @@ function selectHybridMode(mode) {
 /**
  * Setup click handlers for hybrid combination buttons
  */
-function setupHybridCombinations(){
-    const buttons = document.querySelectorAll('.hybrid-combo-btn');
-    if(!buttons.length) return;
+function setupHybridCombinations() {
+  const buttons = document.querySelectorAll(".hybrid-combo-btn");
+  if (!buttons.length) return;
 
-    buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const combo = btn.dataset.combo;
-            selectHybridCombination(combo);
-        });
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const combo = btn.dataset.combo;
+      selectHybridCombination(combo);
     });
+  });
 }
 
 /**
  * Handle hybrid combination selection
  * @param {string} combo - Combination key (e.g., 'priority-srtf', 'fcfs-sjf')
  */
-function selectHybridCombination(combo){
+function selectHybridCombination(combo) {
+  // Update active button visually (only within visible group)
+  document.querySelectorAll(".hybrid-combo-btn").forEach((btn) => {
+    btn.classList.remove("active");
+  });
+  const activeBtn = document.querySelector(
+    `.hybrid-combo-btn[data-combo="${combo}"]`,
+  );
+  if (activeBtn) {
+    activeBtn.classList.add("active");
+  }
 
-    // Update active button visually (only within visible group)
-    document.querySelectorAll('.hybrid-combo-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    const activeBtn = document.querySelector(`.hybrid-combo-btn[data-combo="${combo}"]`);
-    if(activeBtn){
-        activeBtn.classList.add('active');
-    }
+  // Save to state with 'hybrid-' prefix
+  const fullAlgo = `hybrid-${combo}`;
+  setSelectedAlgorithm(fullAlgo);
 
-    // Save to state with 'hybrid-' prefix
-    const fullAlgo = `hybrid-${combo}`;
-    setSelectedAlgorithm(fullAlgo);
+  // Update input fields based on selected combination
+  updateConditionalFields(fullAlgo);
 
-    // Update input fields based on selected combination
-    updateConditionalFields(fullAlgo);
-
-    console.log(`Hybrid combination selected: ${fullAlgo}`);
+  console.log(`Hybrid combination selected: ${fullAlgo}`);
 }
-
 
 /**
  * Setup add process button and wire remove on existing row
  */
 
 function setupProcessControls() {
-  const addBtn = document.getElementById('add-process-btn');
+  const addBtn = document.getElementById("add-process-btn");
   if (addBtn) {
-    addBtn.addEventListener('click', addProcess);
+    addBtn.addEventListener("click", addProcess);
   }
 
-  wireRemoveButton(document.getElementById('process-row-1'));
+  wireRemoveButton(document.getElementById("process-row-1"));
 }
 
 /**
@@ -217,7 +213,7 @@ function addProcess() {
   const algoKey = getSelectedAlgorithm();
 
   const row = document.createElement("div");
-  row.className = 'process-row';
+  row.className = "process-row";
   row.id = `process-row-${count}`;
 
   row.innerHTML = `
@@ -279,136 +275,130 @@ function removeProcess(row) {
 /**
  * Wire the Run Simulation button
  */
-function setupRunButton(){
-    const runBtn = document.getElementById('run-btn');
-    if(!runBtn) return;
+function setupRunButton() {
+  const runBtn = document.getElementById("run-btn");
+  if (!runBtn) return;
 
-    runBtn.addEventListener('click', handleRunSimulation);
+  runBtn.addEventListener("click", handleRunSimulation);
 }
-
-
 
 /**
  * Collect process inputs, validate, run scheduler, render results
  */
-function handleRunSimulation(){
+function handleRunSimulation() {
+  // Step 1 — Check algorithm is selected
+  const algo = getSelectedAlgorithm();
+  if (!algo) {
+    alert("Please select an algorithm first.");
+    return;
+  }
 
-    // Step 1 — Check algorithm is selected
-    const algo = getSelectedAlgorithm();
-    if(!algo){
-        alert('Please select an algorithm first.');
-        return;
-    }
+  // Step 2 — Collect and validate process rows
+  const rows = document.querySelectorAll(".process-row");
+  const collectedProcesses = [];
+  let hasError = false;
 
-    // Step 2 — Collect and validate process rows
-    const rows = document.querySelectorAll('.process-row');
-    const collectedProcesses = [];
-    let hasError = false;
+  rows.forEach((row) => {
+    const id = row.querySelector(".process-id").textContent.trim();
+    const inputs = row.querySelectorAll(".process-input:not([hidden])");
+    const at = parseInt(row.querySelectorAll(".process-input")[0].value);
+    const bt = parseInt(row.querySelectorAll(".process-input")[1].value);
+    const color = row.querySelector(".process-color").value;
 
-    rows.forEach(row => {
-        const id     = row.querySelector('.process-id').textContent.trim();
-        const inputs = row.querySelectorAll('.process-input:not([hidden])');
-        const at = parseInt(row.querySelectorAll('.process-input')[0].value);
-const bt = parseInt(row.querySelectorAll('.process-input')[1].value);
-        const color  = row.querySelector('.process-color').value;
+    // Priority handling
+    let priority = 0;
+    if (algo.includes("priority")) {
+      const priorityInput = row.querySelector(".field-priority:not([hidden])");
+      priority = parseInt(priorityInput.value);
 
-        // Priority handling
-let priority = 0;
-if(algo.includes('priority')){
-    const priorityInput = row.querySelector('.field-priority:not([hidden])');
-    priority = parseInt(priorityInput.value);
-
-    if(!isPositiveNumber(priority)){
-        priorityInput.style.borderColor = 'var(--color-error)';
+      if (!isPositiveNumber(priority)) {
+        priorityInput.style.borderColor = "var(--color-error)";
         hasError = true;
-    } else {
-        priorityInput.style.borderColor = 'var(--color-border)';
+      } else {
+        priorityInput.style.borderColor = "var(--color-border)";
+      }
     }
-}
 
-// Quantum handling
-let quantum = 2;
-if(algo.includes('rr')){
-    const quantumInput = row.querySelector('.field-quantum:not([hidden])');
-    quantum = parseInt(quantumInput.value);
+    // Quantum handling
+    let quantum = 2;
+    if (algo.includes("rr")) {
+      const quantumInput = row.querySelector(".field-quantum:not([hidden])");
+      quantum = parseInt(quantumInput.value);
 
-    if(!isPositiveNumber(quantum)){
-        quantumInput.style.borderColor = 'var(--color-error)';
+      if (!isPositiveNumber(quantum)) {
+        quantumInput.style.borderColor = "var(--color-error)";
         hasError = true;
+      } else {
+        quantumInput.style.borderColor = "var(--color-border)";
+      }
+    }
+
+    // Validate burst time — must be positive
+    if (!isPositiveNumber(bt)) {
+      inputs[1].style.borderColor = "var(--color-error)";
+      hasError = true;
     } else {
-        quantumInput.style.borderColor = 'var(--color-border)';
+      inputs[1].style.borderColor = "var(--color-border)";
     }
+
+    // Validate arrival time — must be non-negative
+    if (!isNonNegativeNumber(at)) {
+      inputs[0].style.borderColor = "var(--color-error)";
+      hasError = true;
+    } else {
+      inputs[0].style.borderColor = "var(--color-border)";
+    }
+
+    collectedProcesses.push({ id, at, bt, priority, quantum, color });
+  });
+
+  if (hasError) {
+    alert("Please fix invalid inputs before running the simulation.");
+    return;
+  }
+
+  // Step 3 — Save to state
+  clearProcesses();
+  collectedProcesses.forEach((p) => addProcessToState(p));
+
+  // Step 4 — Run the scheduler
+  // For RR, use first process's quantum value (all should be same if validated properly)
+  const options = {};
+  if (algo.includes("rr") && collectedProcesses.length > 0) {
+    const quantumInput = document.querySelector(".field-quantum:not([hidden])");
+    options.quantum = parseInt(quantumInput.value);
+  }
+
+  const results = runScheduler(algo, getProcesses(), options);
+
+  if (!results) {
+    alert(`Algorithm "${algo}" is not yet implemented.`);
+    return;
+  }
+
+  // Step 5 — Render results into the UI
+  renderGantt(results.gantt);
+  renderTable(results.processes);
+  renderMetrics(results.avgTAT, results.avgWT, results.cpuEfficiency);
+
+  // Step 6 — Reveal result sections and scroll
+  revealResultSections();
 }
-
-        // Validate burst time — must be positive
-        if(!isPositiveNumber(bt)){
-            inputs[1].style.borderColor = 'var(--color-error)';
-            hasError = true;
-        } else {
-            inputs[1].style.borderColor = 'var(--color-border)';
-        }
-
-        // Validate arrival time — must be non-negative
-        if(!isNonNegativeNumber(at)){
-            inputs[0].style.borderColor = 'var(--color-error)';
-            hasError = true;
-        } else {
-            inputs[0].style.borderColor = 'var(--color-border)';
-        }
-
-        collectedProcesses.push({ id, at, bt, priority, quantum, color });
-    });
-
-    if(hasError){
-        alert('Please fix invalid inputs before running the simulation.');
-        return;
-    }
-
-    // Step 3 — Save to state
-    clearProcesses();
-    collectedProcesses.forEach(p => addProcessToState(p));
-
-    // Step 4 — Run the scheduler
-    // For RR, use first process's quantum value (all should be same if validated properly)
-    const options = {};
-    if(algo.includes('rr') && collectedProcesses.length > 0){
-        const quantumInput = document.querySelector('.field-quantum:not([hidden])');
-        options.quantum = parseInt(quantumInput.value);
-    }
-
-    const results = runScheduler(algo, getProcesses(), options);
-
-    if(!results){
-        alert(`Algorithm "${algo}" is not yet implemented.`);
-        return;
-    }
-
-    // Step 5 — Render results into the UI
-    renderGantt(results.gantt);
-    renderTable(results.processes);
-    renderMetrics(results.avgTAT, results.avgWT, results.cpuEfficiency);
-
-    // Step 6 — Reveal result sections and scroll
-    revealResultSections();
-}
-
-
-
 
 /**
  * Show gantt, table and metrics sections after simulation runs
  */
-function revealResultSections(){
-    const ganttSection   = document.getElementById('gantt-section');
-    const tableSection   = document.getElementById('table-section');
-    const metricsSection = document.getElementById('metrics-section');
+function revealResultSections() {
+  const ganttSection = document.getElementById("gantt-section");
+  const tableSection = document.getElementById("table-section");
+  const metricsSection = document.getElementById("metrics-section");
 
-    if(ganttSection)   ganttSection.removeAttribute('hidden');
-    if(tableSection)   tableSection.removeAttribute('hidden');
-    if(metricsSection) metricsSection.removeAttribute('hidden');
+  if (ganttSection) ganttSection.removeAttribute("hidden");
+  if (tableSection) tableSection.removeAttribute("hidden");
+  if (metricsSection) metricsSection.removeAttribute("hidden");
 
-    // Scroll smoothly to gantt chart
-    if(ganttSection){
-        ganttSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+  // Scroll smoothly to gantt chart
+  if (ganttSection) {
+    ganttSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 }
