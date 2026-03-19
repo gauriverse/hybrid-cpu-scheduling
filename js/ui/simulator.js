@@ -308,39 +308,37 @@ function handleRunSimulation(){
     rows.forEach(row => {
         const id     = row.querySelector('.process-id').textContent.trim();
         const inputs = row.querySelectorAll('.process-input:not([hidden])');
-        const at     = parseInt(inputs[0].value);
-        const bt     = parseInt(inputs[1].value);
+        const at = parseInt(row.querySelectorAll('.process-input')[0].value);
+const bt = parseInt(row.querySelectorAll('.process-input')[1].value);
         const color  = row.querySelector('.process-color').value;
 
-        // Collect priority if Priority algorithm is selected
-        let priority = 0;
-        if(algo === 'priority'){
-            const priorityInput = inputs[2];
-            priority = parseInt(priorityInput.value);
+        // Priority handling
+let priority = 0;
+if(algo.includes('priority')){
+    const priorityInput = row.querySelector('.field-priority:not([hidden])');
+    priority = parseInt(priorityInput.value);
 
-            // Validate priority is positive
-            if(!isPositiveNumber(priority)){
-                priorityInput.style.borderColor = 'var(--color-error)';
-                hasError = true;
-            } else {
-                priorityInput.style.borderColor = 'var(--color-border)';
-            }
-        }
+    if(!isPositiveNumber(priority)){
+        priorityInput.style.borderColor = 'var(--color-error)';
+        hasError = true;
+    } else {
+        priorityInput.style.borderColor = 'var(--color-border)';
+    }
+}
 
-        // Collect quantum if Round Robin is selected
-        let quantum = 2; // default
-        if(algo === 'rr'){
-            const quantumInput = inputs[2];
-            quantum = parseInt(quantumInput.value);
+// Quantum handling
+let quantum = 2;
+if(algo.includes('rr')){
+    const quantumInput = row.querySelector('.field-quantum:not([hidden])');
+    quantum = parseInt(quantumInput.value);
 
-            // Validate quantum is positive
-            if(!isPositiveNumber(quantum)){
-                quantumInput.style.borderColor = 'var(--color-error)';
-                hasError = true;
-            } else {
-                quantumInput.style.borderColor = 'var(--color-border)';
-            }
-        }
+    if(!isPositiveNumber(quantum)){
+        quantumInput.style.borderColor = 'var(--color-error)';
+        hasError = true;
+    } else {
+        quantumInput.style.borderColor = 'var(--color-border)';
+    }
+}
 
         // Validate burst time — must be positive
         if(!isPositiveNumber(bt)){
