@@ -685,7 +685,7 @@ function runHybridPrioritySRTF(rawProcesses) {
   };
 }
 
-function runHybridRRSJF(rawProcesses, quantum) {
+function runHybridRRSJF(rawProcesses,quantum) {
   const processes = rawProcesses.map((p) => ({
     ...p,
     remaining: p.bt,
@@ -746,6 +746,12 @@ function runHybridRRSJF(rawProcesses, quantum) {
     time += execTime;
 
     // Add arrivals during execution
+    processes.forEach((p) => {
+  if (p.at <= time && !arrived.has(p.id)) {
+    queue.push(p);
+    arrived.add(p.id);
+  }
+});
 
     // If still remaining → RR push back
     if (current.remaining > 0) {
