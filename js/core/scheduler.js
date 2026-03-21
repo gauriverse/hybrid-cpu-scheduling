@@ -93,6 +93,8 @@ function runScheduler(algorithm, processes, options = {}) {
       return runHybridPrioritySRTF(processes);
     case "hybrid-rr+sjf":
       return runHybridRRSJF(processes, options.quantum || 2);
+    case "hybrid-priority+rr":
+    return runHybridPriorityRR(processes, options.quantum || 2);
 
     // Other algorithms will be added in future commits
     default:
@@ -784,4 +786,80 @@ function runHybridRRSJF(rawProcesses,quantum) {
   };
 
   console.log("Selected Quantum:", options.quantum);
+}
+
+
+/**
+ * Hybrid: Priority + Round Robin (Time Efficiency)
+ * Uses priority to select from queue, then applies time quantum
+ */
+function runHybridPriorityRR(rawProcesses, quantum){
+    const processes = rawProcesses.map(p => ({ ...p, remaining: p.bt, ct: 0, tat: 0, wt: 0 }));
+ 
+    const queue = [];
+    let time = 0;
+    let completed = 0;
+    const n = processes.length;
+    const gantt = [];
+    const arrived = new Set();
+ 
+    while(completed < n){
+        // Add newly arrived processes
+        processes.forEach(p => {
+            if(p.at <= time && !arrived.has(p.id)){
+                queue.push(p);
+                arrived.add(p.id);
+            }
+        });
+ 
+        if(queue.length === 0){
+            gantt.push({ id: 'IDLE', start: time, end: time + 1, color: null });
+            time++;
+            continue;
+        }
+ 
+        // Sort by priority (lower number = higher priority)
+        if(queue.length > 1){
+            queue.sort((a, b) => {
+                if(a.priority !== b.priority) return a.priority - b.priority;
+                return a.at - b.at; // Arrival time as tiebreaker
+            });
+        }
+ 
+        const current = queue.shift();
+        const execTime = Math.min(quantum, current.remaining);
+        
+        gantt.push({ id: current.id, start: time, end: time + execTime, color: current.color });
+ 
+        current.remaining -= execTime;
+        time += execTime;
+ 
+        // Add arrivals during execution
+        processes.forEach(p => {
+            if(p.at <= time && !arrived.has(p.id)){
+                queue.push(p);
+                arrived.add(p.id);
+            }
+        });
+ 
+        if(current.remaining > 0){
+            queue.push(current);
+        } else {
+            current.ct = time;
+            current.tat = current.ct - current.at;
+            current.wt = current.tat - current.bt;
+            completed++;
+        }
+    }
+ 
+    const totalTAT = processes.reduce((sum, p) => sum + p.tat, 0);
+    const totalWT = processes.reduce((sum, p) => sum + p.wt, 0);
+    const avgTAT = totalTAT / n;
+    const avgWT = totalWT / n;
+    const totalBurst = processes.reduce((sum, p) => sum + p.bt, 0);
+    const cpuEfficiency = ((totalBurst / time) * 100).toFixed(2);
+ 
+    processes.forEach(p => delete p.remaining);
+ 
+    return { processes, gantt, avgTAT: avgTAT.toFixed(2), avgWT: avgWT.toFixed(2), cpuEfficiency };
 }
