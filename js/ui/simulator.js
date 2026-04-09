@@ -44,27 +44,17 @@ function selectAlgorithm(algoKey){
         activeBtn.classList.add('active');
     }
 
-    // Show hybrid options if hybrid selected, hide otherwise
-    const hybridOptions = document.getElementById('hybrid-options');
-    const combinationsSection = document.getElementById('hybrid-combinations');
-    const timeCombos = document.getElementById('time-combos');
-    const spaceCombos = document.getElementById('space-combos');
-    
-    if(hybridOptions){
-        if(algoKey === 'hybrid'){
-            hybridOptions.removeAttribute('hidden');
-        } else {
-            hybridOptions.setAttribute('hidden', '');
-            if(combinationsSection) combinationsSection.setAttribute('hidden', '');
-            if(timeCombos) timeCombos.setAttribute('hidden', '');
-            if(spaceCombos) spaceCombos.setAttribute('hidden', '');
-        }
+ const combinationsSection = document.getElementById('hybrid-combinations');
+
+if(algoKey === 'hybrid'){
+    if(combinationsSection){
+        combinationsSection.removeAttribute('hidden');
     }
-
-    // Show/hide priority and quantum fields in process inputs
-    updateConditionalFields(algoKey);
-
-    console.log(`Algorithm selected: ${algoKey}`);
+} else {
+    if(combinationsSection){
+        combinationsSection.setAttribute('hidden', '');
+    }
+}
 }
 
 /**
