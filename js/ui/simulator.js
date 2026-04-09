@@ -55,6 +55,7 @@ if(algoKey === 'hybrid'){
         combinationsSection.setAttribute('hidden', '');
     }
 }
+updateConditionalFields(algoKey);
 }
 
 /**
@@ -283,7 +284,7 @@ function handleRunSimulation(){
     const rows = document.querySelectorAll('.process-row');
     const collectedProcesses = [];
     let hasError = false;
-    let globalQuantum = 2; // Store one quantum value for all processes
+    let globalQuantum=2; // Store one quantum value for all processes
 
     rows.forEach((row, index) => {
         const id = row.querySelector('.process-id').textContent.trim();
@@ -320,9 +321,34 @@ function handleRunSimulation(){
                 } else {
                     quantumInput.style.borderColor = 'var(--color-border)';
                     // Use first row's quantum as global
-                    if(index === 0){
-                        globalQuantum = quantum;
-                    }
+                   let firstQuantum = null;
+
+rows.forEach((row, index) => {
+    
+    if(algo.includes('rr')){
+        const quantumInput = row.querySelector('.field-quantum:not([hidden])');
+        if(quantumInput){
+            const quantum = parseInt(quantumInput.value);
+
+            if(!isPositiveNumber(quantum)){
+                quantumInput.style.borderColor = 'var(--color-error)';
+                hasError = true;
+            } else {
+                quantumInput.style.borderColor = 'var(--color-border)';
+
+                // ✅ STORE FIRST VALUE
+                if(firstQuantum === null){
+                    firstQuantum = quantum;
+                } 
+                // ❗ CHECK MISMATCH
+                else if(quantum !== firstQuantum){
+                    quantumInput.style.borderColor = 'var(--color-error)';
+                    hasError = true;
+                }
+            }
+        }
+    }
+});
                 }
             }
         }
