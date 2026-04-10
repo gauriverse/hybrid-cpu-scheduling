@@ -207,7 +207,7 @@ function addProcess(){
 
     row.innerHTML = `
         <span class="process-id">P${count}</span>
-        <input type="number" class="process-input" placeholder="0" min="0" value="0" />
+        <input type="number" class="process-input" placeholder="0" min="0" />
         <input type="number" class="process-input" placeholder="1" min="1" />
         <input type="number" class="process-input field-priority" placeholder="1" min="1" ${algoKey.includes('priority') ? '' : 'hidden'} />
         <input type="number" class="process-input field-quantum" placeholder="2" min="1" ${algoKey.includes('rr') ? '' : 'hidden'} />
