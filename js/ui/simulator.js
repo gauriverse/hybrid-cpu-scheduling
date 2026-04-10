@@ -284,7 +284,7 @@ function handleRunSimulation(){
     const rows = document.querySelectorAll('.process-row');
     const collectedProcesses = [];
     let hasError = false;
-    let globalQuantum=2; // Store one quantum value for all processes
+    let globalQuantum = null; // Store one quantum value for all processes
 
     rows.forEach((row, index) => {
         const id = row.querySelector('.process-id').textContent.trim();
@@ -309,49 +309,30 @@ function handleRunSimulation(){
             }
         }
 
-        // Quantum handling - READ ONCE from first process
-        if(algo.includes('rr')){
+       // VALIDATION: Check for quantum mismatch if RR is selected
+    if (algo.includes('rr')) {
+        let firstQuantumValue = null;
+        rows.forEach((row) => {
             const quantumInput = row.querySelector('.field-quantum:not([hidden])');
-            if(quantumInput){
-                const quantum = parseInt(quantumInput.value);
-
-                if(!isPositiveNumber(quantum)){
+            if (quantumInput) {
+                const val = parseInt(quantumInput.value);
+                if (!isPositiveNumber(val)) {
                     quantumInput.style.borderColor = 'var(--color-error)';
                     hasError = true;
                 } else {
                     quantumInput.style.borderColor = 'var(--color-border)';
-                    // Use first row's quantum as global
-                   let firstQuantum = null;
-
-rows.forEach((row, index) => {
-    
-    if(algo.includes('rr')){
-        const quantumInput = row.querySelector('.field-quantum:not([hidden])');
-        if(quantumInput){
-            const quantum = parseInt(quantumInput.value);
-
-            if(!isPositiveNumber(quantum)){
-                quantumInput.style.borderColor = 'var(--color-error)';
-                hasError = true;
-            } else {
-                quantumInput.style.borderColor = 'var(--color-border)';
-
-                // ✅ STORE FIRST VALUE
-                if(firstQuantum === null){
-                    firstQuantum = quantum;
-                } 
-                // ❗ CHECK MISMATCH
-                else if(quantum !== firstQuantum){
-                    quantumInput.style.borderColor = 'var(--color-error)';
-                    hasError = true;
+                    if (firstQuantumValue === null) {
+                        firstQuantumValue = val;
+                        globalQuantum = val; // <--- UPDATE THE GLOBAL VARIABLE HERE
+                    } else if (val !== firstQuantumValue) {
+                        quantumInput.style.borderColor = 'var(--color-error)';
+                        hasError = true;
+                    }
                 }
             }
-        }
+        });
     }
-});
-                }
-            }
-        }
+
 
         // Validate burst time
         if(!isPositiveNumber(bt)){
