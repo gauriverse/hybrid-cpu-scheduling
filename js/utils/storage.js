@@ -1,7 +1,7 @@
 // Simulator State Management
 
 let processes = [];
-let selectedAlgorithm = 'fcfs';
+let selectedAlgorithm = null;
 let processCounter = 1;
 
 /**

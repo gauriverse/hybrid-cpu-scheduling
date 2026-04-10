@@ -296,11 +296,12 @@ function setupRunButton(){
 function handleRunSimulation(){
 
     // Step 1 — Check algorithm is selected
-    const algo = getSelectedAlgorithm();
-    if(!algo){
-        alert('Please select an algorithm first.');
-        return;
-    }
+  const algo = getSelectedAlgorithm();
+
+    if (!algo || algo === "") {
+    alert("Please select an algorithm first!");
+    return;
+}
 
     // Step 2 — Collect and validate process rows
     const rows = document.querySelectorAll('.process-row');
