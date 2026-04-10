@@ -34,7 +34,7 @@ function selectAlgorithm(algoKey){
 
     // Save to state
     setSelectedAlgorithm(algoKey);
-
+    resetSimulatorUI();
     // Update active button visually
     document.querySelectorAll('.algo-selector-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -224,7 +224,29 @@ function addProcess(){
 
     wireRemoveButton(row);
 }
+function resetSimulatorUI(){
 
+    // 1. Clear process rows
+    const container = document.getElementById('process-rows');
+    if(container){
+        container.innerHTML = '';
+    }
+
+    // 2. Reset process counter (IMPORTANT)
+    resetProcessCounter(); // (ye function hona chahiye tere state.js me)
+
+    // 3. Add default first row
+    addProcess();
+
+    // 4. Hide results sections
+    const ganttSection   = document.getElementById('gantt-section');
+    const tableSection   = document.getElementById('table-section');
+    const metricsSection = document.getElementById('metrics-section');
+
+    if(ganttSection)   ganttSection.setAttribute('hidden', '');
+    if(tableSection)   tableSection.setAttribute('hidden', '');
+    if(metricsSection) metricsSection.setAttribute('hidden', '');
+}
 /**
  * Attach remove handler to a process row's remove button
  * @param {HTMLElement} row - The process row element
