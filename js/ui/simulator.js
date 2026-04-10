@@ -277,7 +277,18 @@ function removeProcess(row){
         return;
     }
 
+    // remove selected row
     row.remove();
+
+    // 🔥 REINDEX IDs AFTER DELETE
+    const updatedRows = container.querySelectorAll('.process-row');
+
+    updatedRows.forEach((r, index) => {
+        const idCell = r.querySelector('.process-id'); // assuming this class exists
+        if(idCell){
+            idCell.textContent = "P" + (index + 1);
+        }
+    });
 }
 
 /**

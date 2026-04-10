@@ -20,6 +20,7 @@ function renderAlgorithmCards(){
         card.addEventListener('click', () => {
             const algoKey = card.dataset.algo;
             showAlgorithmModal(algoKey);
+            
         });
     });
 }

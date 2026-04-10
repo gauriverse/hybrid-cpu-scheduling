@@ -41,6 +41,7 @@ function getSelectedAlgorithm(){
  */
 function setSelectedAlgorithm(algoKey){
     selectedAlgorithm = algoKey;
+    
 }
 
 /**
@@ -62,5 +63,5 @@ function incrementProcessCounter(){
  * Reset process counter to 1
  */
 function resetProcessCounter(){
-    processCounter = 1;
+    processCounter = 0;
 }
