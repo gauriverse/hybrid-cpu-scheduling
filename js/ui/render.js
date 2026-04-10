@@ -136,7 +136,7 @@ function renderMetrics(avgTAT, avgWT, cpuEfficiency){
     const awtEl        = document.getElementById('metric-awt');
     const efficiencyEl = document.getElementById('metric-efficiency');
 
-    if(atatEl)       atatEl.textContent       = avgTAT;
-    if(awtEl)        awtEl.textContent        = avgWT;
+    if(atatEl)       atatEl.textContent       = `${avgTAT} ms`;
+    if(awtEl)        awtEl.textContent        = `${avgWT} ms`;
     if(efficiencyEl) efficiencyEl.textContent = `${cpuEfficiency}%`;
 }
